@@ -1,3 +1,5 @@
+---------Create Tables--------------------
+
 CREATE TABLE Titles (
 	Title_ID VARCHAR(5) NOT NULL,
 	Title VARCHAR  NOT NULL,
@@ -5,7 +7,7 @@ CREATE TABLE Titles (
 );
 
 CREATE TABLE Departments (
-	Dept_No INTEGER NOT NULL,
+	Dept_No VARCHAR(4) NOT NULL,
 	Dept_Name VARCHAR NOT NULL,
 	PRIMARY KEY (Dept_No)
 );
@@ -24,15 +26,15 @@ CREATE TABLE Employees (
 
 CREATE TABLE Dept_emp (
 	Emp_No INTEGER NOT NULL,
-	Dept_No INTEGER NOT NULL,
+	Dept_No VARCHAR(4) NOT NULL,
 	FOREIGN KEY (Emp_No) REFERENCES Employees (Emp_No),
 	FOREIGN KEY (Dept_No) REFERENCES Departments (Dept_No)
 );
 
 
 CREATE TABLE Dept_manager (
+	Dept_No VARCHAR(4) NOT NULL,
 	Emp_No INTEGER NOT NULL,
-	Dept_No INTEGER NOT NULL,
 	FOREIGN KEY (Emp_No) REFERENCES Employees (Emp_No),
 	FOREIGN KEY (Dept_No) REFERENCES Departments (Dept_No)
 );
@@ -44,5 +46,72 @@ CREATE TABLE Salaries (
 	FOREIGN KEY (Emp_No) REFERENCES Employees (Emp_No)
 );
 
- 
+
+--------- Data Analysis --------------------------------------------------------
+---List the following details of each employee: 
+---employee number, last name, first name, sex,and salary.
+
+SELECT e.Emp_No, e.Last_Name, e.First_Name, e.Sex, s.Salary 
+FROM employees e 
+INNER JOIN salaries s 
+ON e.Emp_No = s.Emp_No 
+ORDER BY e.Emp_No;
+
+---List first name, last name, and hire date for employees who were hired in 1986
+SELECT First_Name, Last_Name, Hire_Date
+FROM employees  
+WHERE Hire_Date >= '1986-01-01' and Hire_Date < '1987-01-01'
+ORDER BY Hire_Date;
+
+
+---List the manager of each department with the following information: 
+---department number, department name, the manager's employee number, last name, first name.
+SELECT d.Dept_No, d.Dept_Name, m.Emp_No, e.Last_Name, e.First_Name
+FROM Departments d
+INNER JOIN Dept_Manager m ON d.Dept_No = m.Dept_NO
+INNER JOIN Employees e ON m.Emp_No = e.Emp_No
+ORDER BY d.Dept_No;
+
+---List the department of each employee with the following information: 
+---employee number, last name, first name, and department name.
+SELECT e.Emp_No, e.Last_Name, e.First_Name, d.Dept_Name
+FROM Employees e
+INNER JOIN Dept_Emp de ON e.Emp_No = de.Emp_No
+INNER JOIN Departments d ON de.Dept_No = d.Dept_No
+ORDER BY e.Emp_No;
+
+
+--List first name, last name, and sex for employees 
+--whose first name is "Hercules" and last names begin with "B."
+SELECT  First_Name, Last_Name, Sex
+FROM Employees 
+WHERE First_name = 'Hercules' 
+AND Last_name like 'B%'
+ORDER BY Last_Name;
+
+---List all employees in the Sales department, including their 
+---employee number, last name, first name, and department name.
+SELECT e.Emp_No, e.Last_Name, e.First_Name, d.Dept_Name
+FROM Employees e
+INNER JOIN Dept_Emp de ON e.Emp_No = de.Emp_No
+INNER JOIN Departments d ON de.Dept_No = d.Dept_No
+WHERE Dept_Name = 'Sales'
+ORDER BY e.Emp_No;
+
+---List all employees in the Sales and Development departments, 
+---including their employee number, last name, first name, and department name.
+SELECT e.Emp_No, e.Last_Name, e.First_Name, d.Dept_Name
+FROM Employees e
+INNER JOIN Dept_Emp de ON e.Emp_No = de.Emp_No
+INNER JOIN Departments d ON de.Dept_No = d.Dept_No
+WHERE Dept_Name = 'Sales' OR Dept_Name = 'Development'
+ORDER BY e.Emp_No;
+
+---In descending order, list the frequency count of employee last names, 
+---i.e., how many employees share each last name.
+SELECT Last_Name, COUNT(Last_Name) as Last_Name_Count
+FROM Employees
+GROUP BY Last_Name
+ORDER BY Last_Name
+
 
